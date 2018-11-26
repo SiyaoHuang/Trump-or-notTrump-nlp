@@ -1,3 +1,3 @@
 from model import run
 
-run('train.csv', 'test.csv')
+run('train.csv', 'test.csv', 'out2')
