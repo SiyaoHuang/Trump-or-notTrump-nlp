@@ -1,5 +1,4 @@
 import pandas as pd
-from keras.preprocessing import sequence
 import nltk
 import numpy as np
 # import nltk.data
@@ -35,7 +34,7 @@ def get_test(name, vocabulary_size):
 def export(out, output):
     data = pd.read_csv('sample.csv')
     for i in range(len(out)):
-        if(out[i] > 0.7):
+        if(out[i] > 0.5):
             data.Label[i] = 1
         else:
             data.Label[i] = -1

@@ -2,12 +2,14 @@ from IO import get_data, get_test, export, get_data2, get_test2
 from keras.layers import Input, Embedding, LSTM, Dense
 from keras.models import Model, Sequential
 import keras
+from sklearn.svm import SVC
+import numpy as np
 
 vocabulary_size = 5000
 max_words = 150
-embedding_size= 32
-batch_size = 64
-num_epochs = 6
+embedding_size=32
+batch_size = 100
+num_epochs = 1
 
 def run(train, test, output):
     X_train, y_train = get_data(train, vocabulary_size)
@@ -19,10 +21,9 @@ def run(train, test, output):
     out(X_test, model, output)
 
 def Model1():
-    embedding_size=32
     model = Sequential()
     model.add(Embedding(vocabulary_size, embedding_size, input_length=max_words))
-    model.add(LSTM(100))
+    model.add(LSTM(200))
     model.add(Dense(100, activation='relu'))
     model.add(Dense(1, activation='sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -70,3 +71,39 @@ def fit2(X_train, X_train2, y_train, model):
 def out2(X_test, X_test2, model, output):
     out = model.predict([X_test, X_test2])
     export(out, output)
+
+def run3(train, test, output):
+    X_train, X_train2, y_train = get_data2(train, vocabulary_size)
+    X_test, X_test2 = get_test2(test, vocabulary_size)
+    print(X_train.shape, X_train2.shape, y_train.shape)
+    print(X_test.shape, X_test2.shape)
+    model1 = Model1()
+    fit(X_train, y_train, model1)
+    X_train_m = model1.predict(X_train)
+    # print(X_train_m.shape)
+    for i in range(X_train_m.shape[0]):
+        if(X_train_m[i] > 0.5):
+            X_train_m[i] = 1
+        else:
+            X_train_m[i] = -1
+    X_train_m = np.concatenate((X_train_m, X_train2), axis = 1)
+    X_test_m = model1.predict(X_test)
+    X_test_m = np.concatenate((X_test_m, X_test2), axis = 1)
+    clf = SVC(gamma='auto')
+    clf.fit(X_train_m, y_train)
+    out = clf.predict(X_test_m) 
+    export(out, output)
+    # model3 = Model3()
+    # print(X_train_m.shape)
+    # print(X_train_m)
+    # fit(X_train_m, y_train, model3)
+    # out(X_test_m, model3, output)
+
+# def Model3():
+#     input_a = Input(shape=(3,))
+#     x = Dense(10, activation='relu')(input_a)
+#     x = Dense(1, activation='relu')(x)
+#     model = Model(inputs=[input_a], outputs=[x])
+#     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+#     print(model.summary())
+#     return model
