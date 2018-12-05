@@ -9,7 +9,7 @@ vocabulary_size = 5000
 max_words = 150
 embedding_size=32
 batch_size = 100
-num_epochs = 1
+num_epochs = 12
 
 def run(train, test, output):
     X_train, y_train = get_data(train, vocabulary_size)
@@ -18,7 +18,8 @@ def run(train, test, output):
     print(X_test.shape)
     model = Model1()
     fit(X_train, y_train, model)
-    out(X_test, model, output)
+    out(X_train, model, output)
+    print('---------')
 
 def Model1():
     model = Sequential()
